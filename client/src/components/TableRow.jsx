@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import axios from "axios";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { deleteServerPort } from "../redux/actions/serverPortActions";
 
 class TableRow extends Component {
   constructor(props) {
@@ -7,10 +9,7 @@ class TableRow extends Component {
     this.delete = this.delete.bind(this);
   }
   delete() {
-    axios
-      .get("http://localhost:5000/serverport/delete/" + this.props.obj._id)
-      .then(console.log("Deleted"))
-      .catch(err => console.log(err));
+    this.props.deleteServerPort(this.props.obj._id);
   }
 
   render() {
@@ -34,4 +33,11 @@ class TableRow extends Component {
   }
 }
 
-export default TableRow;
+TableRow.propTypes = {
+  deleteServerPort: PropTypes.func.isRequired
+};
+
+export default connect(
+  null,
+  { deleteServerPort }
+)(TableRow);

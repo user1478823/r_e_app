@@ -1,27 +1,37 @@
 import React, { Component } from "react";
-import axios from "axios";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import {
+  fetchServerPortForEdit,
+  editServerPort
+} from "../redux/actions/serverPortActions";
 
-export default class EditComponent extends Component {
+class EditComponent extends Component {
   constructor(props) {
     super(props);
     this.onChangeHostName = this.onChangeHostName.bind(this);
     this.onChangePort = this.onChangePort.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-
-    this.state = { name: "", port: "" };
   }
 
+  state = {
+    name: "",
+    port: ""
+  };
+
   componentDidMount() {
-    axios
-      .get(
-        "http://localhost:5000/serverport/edit/" + this.props.match.params.id
-      )
-      .then(response => {
-        this.setState({ name: response.data.name, port: response.data.port });
-      })
-      .catch(function(error) {
-        console.log(error);
+    this.props.fetchServerPortForEdit(this.props.match.params.id);
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.serverPort) {
+      this.setState({
+        name: nextProps.serverPort.name,
+        port: nextProps.serverPort.port
       });
+    }
+    if (nextProps.isEdited) {
+      this.props.history.push("/");
+    }
   }
 
   onChangeHostName(e) {
@@ -36,21 +46,16 @@ export default class EditComponent extends Component {
   }
   onSubmit(e) {
     e.preventDefault();
-    const serverport = {
+    const editedServerPort = {
       name: this.state.name,
       port: this.state.port
     };
-    axios
-      .post(
-        "http://localhost:5000/serverport/update/" + this.props.match.params.id,
-        serverport
-      )
-      .then(res => console.log(res.data));
+    this.props.editServerPort(this.props.match.params.id, editedServerPort);
+
     this.setState({
       name: "",
       port: ""
     });
-    this.props.history.push("/index");
   }
 
   render() {
@@ -88,3 +93,20 @@ export default class EditComponent extends Component {
     );
   }
 }
+
+EditComponent.propTypes = {
+  fetchServerPortForEdit: PropTypes.func.isRequired,
+  serverPort: PropTypes.object.isRequired,
+  editServerPort: PropTypes.func.isRequired,
+  isEdited: PropTypes.bool.isRequired
+};
+
+const mapStateToProps = storeState => ({
+  serverPort: storeState.root.serverPort,
+  isEdited: storeState.root.isEdited
+});
+
+export default connect(
+  mapStateToProps,
+  { fetchServerPortForEdit, editServerPort }
+)(EditComponent);

@@ -4,12 +4,16 @@ const ServerPortRouter = express.Router();
 
 const ServerPort = require("../models/ServerPort");
 
+resSuccess = {
+  saved: true
+};
+
 ServerPortRouter.route("/add").post((req, res) => {
   const serverport = new ServerPort(req.body);
   serverport
     .save()
     .then(serverport => {
-      res.json("Server added successfully");
+      res.json(resSuccess);
     })
     .catch(err => {
       res.status(400).send("unable to save to database");
@@ -44,7 +48,7 @@ ServerPortRouter.route("/update/:id").post((req, res) => {
       serverport
         .save()
         .then(serverport => {
-          res.json("Update complete");
+          res.json(resSuccess);
         })
         .catch(err => {
           res.status(400).send("unable to update the database");
@@ -56,7 +60,7 @@ ServerPortRouter.route("/update/:id").post((req, res) => {
 ServerPortRouter.route("/delete/:id").get((req, res) => {
   ServerPort.findByIdAndRemove({ _id: req.params.id }, (err, serverport) => {
     if (err) res.json(err);
-    else res.json("Successfully removed");
+    else res.json(resSuccess);
   });
 });
 

@@ -1,28 +1,24 @@
 import React, { Component } from "react";
-import axios from "axios";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { fetchServerPorts } from "../redux/actions/serverPortActions";
 import TableRow from "./TableRow";
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { serverports: [] };
-  }
+  //did better than will for async calls
   componentDidMount() {
-    axios
-      .get("http://localhost:5000/serverport")
-      .then(response => {
-        this.setState({ serverports: response.data });
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
+    this.props.fetchServerPorts();
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isDeleted) {
+      this.props.fetchServerPorts();
+    }
   }
   tabRow() {
-    return this.state.serverports.map(function(object, i) {
+    return this.props.serverPorts.map(function(object, i) {
       return <TableRow obj={object} key={i} />;
     });
   }
-
   render() {
     return (
       <div className="container">
@@ -41,4 +37,17 @@ class App extends Component {
   }
 }
 
-export default App;
+App.propTypes = {
+  fetchServerPorts: PropTypes.func.isRequired,
+  isDeleted: PropTypes.bool.isRequired
+};
+
+const mapStateToProps = storeState => ({
+  serverPorts: storeState.root.serverPorts,
+  isDeleted: storeState.root.isDeleted
+});
+
+export default connect(
+  mapStateToProps,
+  { fetchServerPorts }
+)(App);

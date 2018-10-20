@@ -2,6 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 
+import { Provider } from "react-redux";
+import store from "./redux/store";
+
 import App from "./components/App";
 import Navbar from "./components/Navbar";
 import CreateComponent from "./components/CreateComponent";
@@ -15,13 +18,15 @@ import "bootstrap/dist/css/bootstrap.css";
 ReactDOM.render(
   <main>
     <Navbar />
-    <BrowserRouter>
-      <Switch>
-        <Route exact path="/" component={App} />
-        <Route exact path="/create" component={CreateComponent} />
-        <Route exact path="/edit/:id" component={EditComponent} />
-      </Switch>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/" component={App} />
+          <Route exact path="/create" component={CreateComponent} />
+          <Route exact path="/edit/:id" component={EditComponent} />
+        </Switch>
+      </BrowserRouter>
+    </Provider>
   </main>,
   document.getElementById("root")
 );

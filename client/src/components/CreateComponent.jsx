@@ -1,12 +1,18 @@
 import React, { Component } from "react";
-import axios from "axios";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { createServerPort } from "../redux/actions/serverPortActions";
 
-export default class CreateComponent extends Component {
+class CreateComponent extends Component {
   constructor(props) {
     super(props);
     this.onSubmit = this.onSubmit.bind(this);
   }
-
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isAdded) {
+      this.props.history.push("/");
+    }
+  }
   onSubmit(e) {
     e.preventDefault();
     const inputs = e.target.getElementsByTagName("input");
@@ -14,9 +20,7 @@ export default class CreateComponent extends Component {
       name: inputs.hostName.value,
       port: inputs.serverPort.value
     };
-    axios
-      .post("http://localhost:5000/serverport/add", serverport)
-      .then(res => console.log(res.data));
+    this.props.createServerPort(serverport);
     this.setState({
       name: "",
       port: ""
@@ -48,3 +52,17 @@ export default class CreateComponent extends Component {
     );
   }
 }
+
+CreateComponent.propTypes = {
+  createServerPort: PropTypes.func.isRequired,
+  isAdded: PropTypes.bool.isRequired
+};
+
+const mapStateToProps = storeState => ({
+  isAdded: storeState.root.isAdded
+});
+
+export default connect(
+  mapStateToProps,
+  { createServerPort }
+)(CreateComponent);
