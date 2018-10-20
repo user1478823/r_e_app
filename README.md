@@ -1,11 +1,11 @@
 # Install dependencies for client
 
-# from client:
+# from server:
 
 npm run client-install
 
 # Run the client & server with concurrently
 
-# from client:
+# from server:
 
 npm run dev
